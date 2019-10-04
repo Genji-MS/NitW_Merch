@@ -2,9 +2,34 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    
+    </br>
+    <div class="jumbotron">
+        <!-- News jumbotron from https://mdbootstrap.com/docs/jquery/components/jumbotron/ -->
+        <!-- Grid row -->
+        <div class="row">
+            <!-- Grid column -->
+            <div class="col-md-4 mx-3">   
+                <!-- Featured image -->
+                <div class="view overlay">
+                    <img src="../static/{{ itemlist.image_lg }}" width="" class="img-fluid" alt="Large Image of character">
+                </div>     
+            </div>
+            <!-- Grid column -->
+            <!-- Grid column -->
+            <div class="col-md-7 text-md-left ml-3 mt-3">
+            <!-- Excerpt -->
+            <h1 class="display-3">{{ itemlist.title }}</h1>
+            <hr class="my-4">
+            <p class="font-weight-normal"><strong>Description: </strong>{{ itemlist.desc_full }}</p>
+            <p class="font-weight-normal"><strong>Traits: </strong>{{ itemlist.desc_sm }}</p>
+            <p class="font-weight-normal">Art by <a href="https://www.deviantart.com/xzethanyx"><strong>xZethanyx</strong></a></p>      
+            <hr class="my-4">
+            <a class="btn btn-primary btn-lg" href="#" role="button">Add to Cart</a>      
+            </div>
+        <!-- Grid column -->
+        </div>
+        <!-- Grid row -->      
     </div>
-    <h1>{{ itemlist.title }}</h1>
-    </div>
+    <!-- News jumbotron -->
         
 {% endblock %}
