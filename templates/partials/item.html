@@ -1,9 +1,8 @@
 
-<div class="col-sm-4 col-md-4 col-xs-12 ml-auto" onclick="location.href='store_item/{{ item._id }}';" style="cursor:pointer;">
+<div class="col-sm-4 col-md-4 col-xs-12 ml-auto" onclick="location.href='store_item/{{ item._id }}';" style="cursor:pointer;" name = "id" value="{{ item._id }}">
     <div class="row" style="border:none; background:rgb(220, 244, 255);">
-        <div class="col-sm-4 col-md-4 col-xs-12 image-container ml-auto" gutterwidth="10px">
-            <img src="static/120x.png">
-            <!-- {{ item.image_sm }} -->
+        <div class="col-sm-4 col-md-4 col-xs-12 image-container ml-auto">
+            <img src="static/{{ item.image_sm }}">
         </div>
         <div class="col-sm-8 col-md-8 col-xs-12">
             <h4>{{ item.title }}</h4>
