@@ -1,0 +1,9 @@
+<!-- templates/store_cart.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+    </br>
+    {% for item in cartlist %}
+        {% include 'partials/cart.html' %}
+    {% endfor %}
+{% endblock %}

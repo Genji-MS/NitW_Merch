@@ -40,12 +40,23 @@ def store_purchase(itemlist_id):
     """Add item to cart and return to index page"""
     item = itemlist.find_one({'_id': ObjectId(itemlist_id)})
     cartitem = {
+        'item_id': item.get('_id'),
+        'title': item.get('title'),
+        'image_sm': item.get('image_sm'),
+        'price': item.get('price'),
         'quantity':1
     }
+    #if (cartlist.find_one({'_id': ObjectID(itemlist_id)}) != None):
+    #else:
     cartlist.insert_one(cartitem).inserted_id
     #TODO: attempt to find the item in the db, and if true, increase the quantity
     #√: add the item into our cart DB if false
     return redirect(url_for('index'))#, itemlist=itemlist.find(), msg="One item added to Cart"))
+
+@app.route('/store_cart')#Note to self, everything is in templates, stop trying to call /templates/
+def store_view_cart():
+    """View all items in users cart"""
+    return render_template('store_cart.html', itemlist=itemlist, cart=cartlist.count(), cartlist=cartlist.find())
 
 if app.name == '__main__':
     app.run(debug=True)
