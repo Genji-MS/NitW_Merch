@@ -9,6 +9,8 @@ itemlist = db.itemlist
 #Initialize the cartlist DB, The user will be able to modify these entries.
 cartlist = db.cartlist
 #Initialize the itemlist DB, The user will not have access to modify these entries.
+#KNOWN ISSUE: Because the itemlist DB _id's are dynamic, they will change every restart of the app
+#This means that they will be 'random' in the cartlist, and not found, when trying to add quantity to an item
 itemlist.delete_many({})
 itemlist.insert_many([
     {'title':'Draven Blacktalon', 'desc_sm':'Naive, Nerdy, yet Kind.','desc_full':'Adult raven. Big dreamer who moved country to be with whom he thought would be his true love. Starving artist.','image_sm':'store_item_000_s.png', 'image_lg':'store_item_000_l.png', 'price':'55.00'},
@@ -39,17 +41,27 @@ def store_show_item(itemlist_id):
 def store_purchase(itemlist_id):
     """Add item to cart and return to index page"""
     item = itemlist.find_one({'_id': ObjectId(itemlist_id)})
-    cartitem = {
-        'item_id': item.get('_id'),
-        'title': item.get('title'),
-        'image_sm': item.get('image_sm'),
-        'price': item.get('price'),
-        'quantity':1
-    }
-    #if (cartlist.find_one({'_id': ObjectID(itemlist_id)}) != None):
-    #else:
-    cartlist.insert_one(cartitem).inserted_id
-    #TODO: attempt to find the item in the db, and if true, increase the quantity
+    cartitem = cartlist.find_one({'item_id': ObjectId(itemlist_id)})
+    #print (cartitem)
+    if cartitem is None:
+        cartitem = {
+            'item_id': item.get('_id'),
+            'title': item.get('title'),
+            'image_sm': item.get('image_sm'),
+            'price': item.get('price'),
+            'quantity':1
+        }
+        cartlist.insert_one(cartitem).inserted_id
+    else:
+        #print (f' quantity before{cartitem["quantity"]} ')
+        cartitem['quantity'] += 1
+        #print (f' quantity after {cartitem["quantity"]} ')
+        cartlist.update_one(
+            #Looking for the item title is possible to avoid the bug with making a new DB. However not a REAL solution
+            {"_id":ObjectId(cartitem["_id"])},
+            {'$set':cartitem}
+        )
+    #√: attempt to find the item in the db, and if true, increase the quantity
     #√: add the item into our cart DB if false
     return redirect(url_for('index'))#, itemlist=itemlist.find(), msg="One item added to Cart"))
 
