@@ -30,7 +30,7 @@ def index():
     return render_template('index.html', itemlist = itemlist.find(), cart=cartlist.count() )
 
 @app.route('/store_item/<itemlist_id>', methods=['GET'])
-def store_item_read(itemlist_id):
+def store_show_item(itemlist_id):
     """View single store item"""
     item = itemlist.find_one({'_id': ObjectId(itemlist_id)})
     return render_template('store_item.html', itemlist=item, cart=cartlist.count() )
@@ -54,9 +54,15 @@ def store_purchase(itemlist_id):
     return redirect(url_for('index'))#, itemlist=itemlist.find(), msg="One item added to Cart"))
 
 @app.route('/store_cart')#Note to self, everything is in templates, stop trying to call /templates/
-def store_view_cart():
+def cart_view_all():
     """View all items in users cart"""
     return render_template('store_cart.html', itemlist=itemlist, cart=cartlist.count(), cartlist=cartlist.find())
+
+@app.route('/store_cart/<cartitem_id>/delete', methods=['POST'])
+def store_delete(cartitem_id):
+    """Delete specified item from cart"""
+    cartlist.delete_one({'_id':ObjectId(cartitem_id)})
+    return redirect(url_for('cart_view_all'))
 
 if app.name == '__main__':
     app.run(debug=True)

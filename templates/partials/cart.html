@@ -1,18 +1,17 @@
 <!-- templates/partials/cart.html -->
-<div class="col-sm-4 col-md-4 col-xs-12 ml-auto" onclick="location.href='store_cart/{{ item._id }}';" style="cursor:pointer;" name = "id" value="{{ item._id }}">
+<div class="col-sm-6 col-md-6 col-xs-12" onclick="location.href='store_cart/{{ item._id }}';" style="cursor:pointer;" name = "id" value="{{ item._id }}">
     <div class="row" style="border:none; background:rgb(220, 244, 255);">
         <div class="col-sm-4 col-md-4 col-xs-12 image-container ml-auto">
             <img src="static/{{ item.image_sm }}">
         </div>
         <div class="col-sm-8 col-md-8 col-xs-12">
-            <h4>{{ item._id }}</h4>
+            </br>
             <h4>{{ item.title }}</h4>
-            <hr>
-            <p style="font-size:13px; color:#03225C;">{{ item.price }}</p>
+            <p style="font-size:13px; color:#03225C;">{{ item.price }} Quantity: {{ item.quantity }}</p>
             <p><form method="POST" action="/store_cart/{{ item._id }}/delete">
                 <!-- pure HTML version <button type="submit">Delete</button>-->
                 <input type = "hidden" name="_method" value="DELETE">
-                <button class = "btn btn-primary" type="submit">Delete</button>
+                <button class = "btn btn-primary" type="submit">Remove from Cart</button>
             </form></p>
         </div>
     </div>
