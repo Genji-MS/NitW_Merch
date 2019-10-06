@@ -77,10 +77,16 @@ def cart_view_all():
     return render_template('store_cart.html', itemlist=itemlist, cart=cartlist.count(), cartlist=cartlist.find(), total = total)
 
 @app.route('/store_cart/<cartitem_id>/delete', methods=['POST'])
-def store_delete(cartitem_id):
+def cart_delete(cartitem_id):
     """Delete specified item from cart"""
     cartlist.delete_one({'_id':ObjectId(cartitem_id)})
     return redirect(url_for('cart_view_all'))
+
+@app.route('/store_cart/purchase')
+def cart_purchase():
+    """Display an exit image, and clear the cart"""
+    cartlist.delete_many({})
+    return render_template('store_purchase.html', cart = 0)
 
 if app.name == '__main__':
     app.run(debug=True)
