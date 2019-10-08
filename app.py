@@ -1,10 +1,16 @@
 # app.py
+import os
 from flask import Flask, render_template, request, redirect, url_for
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
-client = MongoClient()
-db = client.itemlist
+#heroku version
+host = os.environ.get('MONGODB_URI', 'mongodb://localhost:27017/itemlist')
+client = MongoClient(host=f'{host}?retryWrites=false')
+db = client.get_default_database()
+
+#client = MongoClient()
+#db = client.itemlist
 itemlist = db.itemlist
 #Initialize the cartlist DB, The user will be able to modify these entries.
 cartlist = db.cartlist
@@ -31,13 +37,13 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     """Return homepage"""
-    return render_template('index.html', itemlist = itemlist.find(), cart=cartlist.count() )
+    return render_template('index.html', itemlist = itemlist.find(), cart=cartlist.count_documents({}) )
 
 @app.route('/store_item/<itemlist_id>', methods=['GET'])
 def store_show_item(itemlist_id):
     """View single store item"""
     item = itemlist.find_one({'_id': ObjectId(itemlist_id)})
-    return render_template('store_item.html', itemlist=item, cart=cartlist.count() )
+    return render_template('store_item.html', itemlist=item, cart=cartlist.count_documents({}) )
 
 @app.route('/store_item/<itemlist_id>/purchase', methods=['GET'])
 def store_purchase(itemlist_id):
@@ -74,7 +80,7 @@ def cart_view_all():
     for item in cartlist.find():
         total += int(item['price']) * int(item['quantity'])
     print(f' Total: {total}')
-    return render_template('store_cart.html', itemlist=itemlist, cart=cartlist.count(), cartlist=cartlist.find(), total = total)
+    return render_template('store_cart.html', itemlist=itemlist, cart=cartlist.count_documents({}), cartlist=cartlist.find(), total = total)
 
 @app.route('/store_cart/<cartitem_id>/delete', methods=['POST'])
 def cart_delete(cartitem_id):
@@ -89,4 +95,5 @@ def cart_purchase():
     return render_template('store_purchase.html', cart = 0)
 
 if app.name == '__main__':
-    app.run(debug=True)
+    #app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=os.environ.get('PORT', 5000))
