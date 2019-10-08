@@ -5,6 +5,7 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 
 #heroku version
+#app.listen(process.env.PORT || 3000, function(){
 host = os.environ.get('MONGODB_URI', 'mongodb://localhost:27017/itemlist')
 client = MongoClient(host=f'{host}?retryWrites=false')
 db = client.get_default_database()
@@ -79,7 +80,8 @@ def cart_view_all():
     total = 0
     for item in cartlist.find():
         total += int(item['price']) * int(item['quantity'])
-    print(f' Total: {total}')
+    #terminal test of output
+    #print(f' Total: {total}')
     return render_template('store_cart.html', itemlist=itemlist, cart=cartlist.count_documents({}), cartlist=cartlist.find(), total = total)
 
 @app.route('/store_cart/<cartitem_id>/delete', methods=['POST'])
