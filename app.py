@@ -14,10 +14,11 @@ db = client.get_default_database()
 #db = client.itemlist
 itemlist = db.itemlist
 cartlist = db.cartlist
-cartlist.delete_many({})
+#cartlist.delete_many({})
 #itemlist.delete_many({})
 #print(itemlist.find())
-if itemlist.count_documents({}) < 8:
+print (itemlist.count_documents({}))
+if itemlist.count_documents({}) == 0:
     populate_db_if_empty()
 
 def populate_db_if_empty():
