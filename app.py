@@ -14,15 +14,16 @@ db = client.get_default_database()
 #db = client.itemlist
 itemlist = db.itemlist
 cartlist = db.cartlist
+
+#we use the below for local ONLY, we don't need to push the database multiple times, so we export the database and import to heroku
 #cartlist.delete_many({})
 #itemlist.delete_many({})
 #print(itemlist.find())
-print (itemlist.count_documents({}))
-if itemlist.count_documents({}) == 0:
-    populate_db_if_empty()
+#print (itemlist.count_documents({}))
+#if itemlist.count_documents({}) == 0:
+#    populate_db_if_empty()
 
 def populate_db_if_empty():
-    #print (f'creating DB')
     itemlist.insert_many([
         {'title':'Draven Blacktalon', 'desc_sm':'Naive, Nerdy, yet Kind.','desc_full':'Adult raven. Big dreamer who moved country to be with whom he thought would be his true love. Starving artist.','image_sm':'store_item_000_s.png', 'image_lg':'store_item_000_l.png', 'price':40.00},
         {'title':'Ally Felli', 'desc_sm': 'Sad, Hot headed, and Stubborn.','desc_full':'Adult cat. Dreams of marriage and children. College drop out.','image_sm':'store_item_001_s.png', 'image_lg':'store_item_001_l.png', 'price':40.00},
