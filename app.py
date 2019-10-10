@@ -20,8 +20,12 @@ cartlist.delete_many({})
 #Initialize the itemlist DB, The user will not have access to modify these entries.
 #KNOWN ISSUE: Because the itemlist DB _id's are dynamic, they will change every restart of the app by doing the below
 #This means that they will be 'random' in the cartlist, and not found, when trying to add quantity to an item
-itemlist.delete_many({})
-itemlist.insert_many([
+
+app = Flask(__name__)
+
+def __init__():
+    itemlist.delete_many({})
+    itemlist.insert_many([
     {'title':'Draven Blacktalon', 'desc_sm':'Naive, Nerdy, yet Kind.','desc_full':'Adult raven. Big dreamer who moved country to be with whom he thought would be his true love. Starving artist.','image_sm':'store_item_000_s.png', 'image_lg':'store_item_000_l.png', 'price':40.00},
     {'title':'Ally Felli', 'desc_sm': 'Sad, Hot headed, and Stubborn.','desc_full':'Adult cat. Dreams of marriage and children. College drop out.','image_sm':'store_item_001_s.png', 'image_lg':'store_item_001_l.png', 'price':40.00},
     {'title':'Faye Luscus', 'desc_sm':'Naive, Kind, yet Bossy.','desc_full': 'Young adult mouse. Struggling college student. Lives with demanding boyfriend.','image_sm':'store_item_002_s.png', 'image_lg':'store_item_002_l.png', 'price':50.00},
@@ -32,8 +36,6 @@ itemlist.insert_many([
     {'title':'Sam Sun', 'desc_sm':'Jaded, Stubborn, yet Thoughtful.','desc_full':'Young adult dog. Gothic struggling artist with lots of pets.','image_sm':'store_item_007_s.png', 'image_lg':'store_item_007_l.png', 'price':50.00},
     {'title':'James Laurens', 'desc_sm':'Kind, Caring, and Quirky.','desc_full':'Teenage bat. Hopeless romantic high school student.','image_sm':'store_item_008_s.png', 'image_lg':'store_item_008_l.png', 'price':40.00}
 ])
-
-app = Flask(__name__)
 
 @app.route('/')
 def index():
@@ -99,3 +101,4 @@ def cart_purchase():
 if app.name == '__main__':
     #app.run(debug=True)
     app.run(debug=True, host='0.0.0.0', port=os.environ.get('PORT', 5000))
+    __init__()
