@@ -17,7 +17,7 @@ cartlist = db.cartlist
 cartlist.delete_many({})
 #itemlist.delete_many({})
 #print(itemlist.find())
-if len(itemlist.find()) < 8:
+if itemlist.count_documents({}) < 8:
     populate_db_if_empty()
 
 def populate_db_if_empty():
