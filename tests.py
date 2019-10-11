@@ -1,21 +1,15 @@
 # tests.py
-import os
 from pymongo import MongoClient
 from unittest import TestCase, main as unittest_main, mock
+import bson.objectid 
 from bson.objectid import ObjectId
 from app import app #throws error when reading pymongo unless pymongo is installed in the (env)
 
-sample_itemlist_id = ObjectId('5d55cffc4a3d4031f42827a3')
-sample_itemlist = {
-    'title':'Lyon Test', 'desc_sm':'Immortal, Intelligent, and Magical.','desc_full':'Little is known, and none who knew have spoken. However it loves to live as the ultimate test subject.','image_sm':'120x.png', 'image_lg':'140x.png', 'price':99.99
-}
-sample_cartlist = {
-    'item_id': sample_itemlist_id,
-    'title': sample_itemlist['title'],
-    'image_sm': sample_itemlist['image_sm'],
-    'price': sample_itemlist['price'],
-    'quantity':98
-}
+client = MongoClient()
+db = client.itemlist
+itemlist = db.itemlist
+cartlist = db.cartlist
+cartlist.delete_many({})
 
 class ContractorTests(TestCase):
     """Flask tests."""
@@ -28,60 +22,57 @@ class ContractorTests(TestCase):
         #Show Flask errors that happen during tests
         app.config['TESTING'] = True
 
-    def test_index(self):#Works
+    def test_index(self):
         """Tests the playlist homepage"""
         result = self.client.get('/')
         self.assertEqual(result.status, '200 OK')
         self.assertIn(b'Sketch', result.data)
 
-    def test_store_show_item(self):#Fails, how can I put in test data to be checked? 'Lyon Test' doesn't appear, because the app uses its own db, not the one specified above
+    def test_store_show_item(self):
         """Test view single store item"""
-        #selection = self.client.find_one({'title':'Sketch'})
-        #result = self.client.get(f'/store_item/{selection["_id"]}')
-        #self.assertEqual(result.status, '200 OK')
-        #self.assertIn(b'60', result.data)
-
-    @mock.patch('pymongo.collection.Collection.find_one')
-    def test_store_show_item_2(self, mock_find):
-        """Test showing a single playlist"""
-        mock_find.return_value = sample_itemlist
-
-        result = self.client.get(f'/store_item/{sample_itemlist_id}')
+        selection = itemlist.find_one({'title':'Sketch'})
+        itemlist_id = ObjectId.__str__(selection.get("_id"))
+        result = self.client.get(f'/store_item/{itemlist_id}')
+        #self.assertEqual(b'60.0', id)
         self.assertEqual(result.status, '200 OK')
-        self.assertIn(b'Lyon Test', result.data)
-    '''
-    @mock.patch('pymongo.collection.Collection.find_one')
-    def test_store_purchase(self, mock_find):# error in _id
+        self.assertIn(b'Genius college student', result.data)
+
+    def test_store_purchase(self):
         """Buying an additional item"""
-        mock_find.return_value = sample_cartlist
-
-        result = self.client.get(f'/store_item/{sample_itemlist_id}/purchase')
-        self.assertEqual(result.status, '200 OK')
-        self.assertIn(b'99.99', result.data)
-
-    @mock.patch('pymongo.collection.Collection.insert_one')
-    def test_store_purchase_2(self, mock_insert):#ObjectId has no [items]
-        """Test purchasing an item"""
-        result = self.client.post(f'/store_item/{ sample_itemlist_id }/purchase', data=sample_itemlist_id)
-
-        #After submitting, should redirect to that playlists' page
+        selection = itemlist.find_one({'title':'Sketch'})
+        itemlist_id = ObjectId.__str__(selection.get("_id"))
+        result = self.client.get(f'/store_item/{itemlist_id}/purchase')
         self.assertEqual(result.status, '302 FOUND')
-        mock_insert.assert_called_with(sample_cartlist)
-
-    @mock.patch('pymongo.collection.Collection.update_one')
-    def test_cart_delete(self, mock_delete):#no ObjectID results
+        self.assertEqual(cartlist.find_one({'title':'Sketch'})['item_id'],selection['_id'])
+        
+    def test_cart_delete(self):
         """Test deleting item from cart"""
-        result = self.client.post(f'/store_cart/{sample_cartlist}/delete', data = sample_itemlist_id)
-
+        #delete everything from cart to begin
+        cartlist.delete_many({})
+        #find one item, and push it into our cart
+        selection = itemlist.find_one({'title':'Sketch'})
+        itemlist_id = ObjectId.__str__(selection.get("_id"))
+        cartitem = {
+            'item_id': selection.get('_id'),
+            'title': selection.get('title'),
+            'image_sm': selection.get('image_sm'),
+            'price': selection.get('price'),
+            'quantity':1
+        }
+        cartlist.insert_one(cartitem).inserted_id
+        #get data of the item
+        selection = cartlist.find_one({'title':'Sketch'})
+        itemlist_id = ObjectId.__str__(selection.get("_id"))
+        #test delete, verify a redirect, that our cartlist no longer contains the item, and the cart is empty
+        result = self.client.post(f'/store_cart/{itemlist_id}/delete', data = itemlist_id)
         self.assertEqual(result.status, '302 FOUND')
-        mock_delete.assert_called_with({'_id': sample_itemlist_id}, {'$set': sample_cartlist})
+        self.assertIsNone(cartlist.find_one({'title':'Sketch'}))
+        self.assertEqual(cartlist.count_documents({}),0)
 
-    @mock.patch('pymongo.collection.Collection.delete_one')
-    def test_cart_puchase(self):#only needs one argument, but two were passed in
+    def test_cart_puchase(self):
         """Test purchasing items from your cart"""
-        result = self.client.get('/store_purchase')
+        result = self.client.get('/store_cart/purchase')
         self.assertEqual(result.status, '200 OK')
 
 if __name__ == '__main__':
      unittest_main()
-     '''
