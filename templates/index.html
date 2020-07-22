@@ -2,11 +2,5 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    </br>
-    <h1>{{ msg }}</h1>
-    <div class="card-deck">
-    {% for item in itemlist %}
-        {% include 'partials/item.html' %}
-    {% endfor %}
-    </div>
+    <h1>{{msg}}</h1>
 {% endblock %}

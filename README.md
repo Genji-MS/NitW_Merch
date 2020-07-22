@@ -12,6 +12,9 @@ Build a test environment, Run flask, then browse the local address in your brows
 Export flask_env=development; flask run
 ```
 
+## Demo
+https://nitw-store.herokuapp.com
+
 ## Features
 
 Displays select items from a database and simulates the shopping cart and purchase of items.

@@ -19,7 +19,7 @@ cartlist = db.cartlist
 #cartlist.delete_many({})
 #itemlist.delete_many({})
 #print(itemlist.find())
-#print (itemlist.count_documents({}))
+#print(itemlist.count_documents({}))
 #if itemlist.count_documents({}) == 0:
 #    populate_db_if_empty()
 
